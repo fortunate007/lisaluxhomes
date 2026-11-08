@@ -18,13 +18,13 @@ async function render(){if(!me||!S.tok)return login();$w((me.name||me.email)+' �
  if(tab==='listings'){const f=mgr()?'':`&filter=${encodeURIComponent(`owner='${me.id}'`)}`;const L=(await api('listings/records?perPage=100&sort=-created'+f)).items,e=edit?L.find(x=>x.id===edit)||{}:{};
   const o=(v,a)=>a.map(x=>`<option ${x===v?'selected':''}>${x}</option>`).join('');
   h+=`<form class="card f" id="lf" onsubmit="save(event)"><strong style="grid-column:1/-1">${edit?'Edit':'Add'} listing</strong>
-  <input name="title" placeholder="Title" value="${esc(e.title)}" required><input name="price" type="number" placeholder="Price" value="${e.price??''}">
-  <select name="type">${o(e.type,['sale','rent','land','commercial'])}</select><select name="status">${o(e.status||'available',['available','sold','rented','hidden'])}</select>
+  <input name="title" placeholder="Title" value="${esc(e.title)}" required><input name="price" type="number" placeholder="Price in KSh (nightly rate for Airbnb)" value="${e.price??''}">
+  <select name="type">${o(e.type,['sale','rent','land','commercial','airbnb'])}</select><select name="status">${o(e.status||'available',['available','sold','rented','hidden'])}</select>
   <input name="location" placeholder="Location" value="${esc(e.location)}"><input name="size" type="number" placeholder="Size (m²)" value="${e.size??''}">
   <input name="bedrooms" type="number" placeholder="Beds" value="${e.bedrooms??''}"><input name="bathrooms" type="number" placeholder="Baths" value="${e.bathrooms??''}">
   <input name="image" type="file" accept="image/*"><label><input type="checkbox" name="featured" style="width:auto" ${e.featured?'checked':''}> Featured</label>
   <label><input type="checkbox" name="offer" style="width:auto" ${e.offer?'checked':''}> On offer</label><input name="old_price" type="number" placeholder="Old price (for offers)" value="${e.old_price||''}">
-  <input name="offer_note" placeholder="Offer note e.g. 10% off" value="${esc(e.offer_note)}"><textarea name="description" placeholder="Description" style="grid-column:1/-1">${esc(e.description)}</textarea>
+  <input name="airbnb_url" placeholder="Airbnb link (Airbnb stays only)" value="${esc(e.airbnb_url)}"><input name="offer_note" placeholder="Offer note e.g. 10% off" value="${esc(e.offer_note)}"><textarea name="description" placeholder="Description" style="grid-column:1/-1">${esc(e.description)}</textarea>
   <button>${edit?'Update':'Create'}</button>${edit?'<button type="button" class="s" onclick="edit=null;render()">Cancel</button>':''}</form>
   <div class="wrap"><table><tr><th>Title</th><th>Type</th><th>Status</th><th>Location</th><th>Price</th><th></th></tr>${L.map(l=>`<tr><td>${esc(l.title)}${l.offer?' 🔥':''}</td><td>${esc(l.type)}</td><td>${esc(l.status)}</td><td>${esc(l.location)}</td><td>${Number(l.price).toLocaleString()}</td>
   <td><button class="s" onclick="edit='${l.id}';render();scrollTo(0,0)">Edit</button> <button class="d" onclick="del('${l.id}')">Delete</button></td></tr>`).join('')||'<tr><td colspan=6>No listings yet.</td></tr>'}</table></div>`}

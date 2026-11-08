@@ -1,119 +1,91 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Luxury Real Estates</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Lisaluxhomes | Homes, Land &amp; Airbnb Stays in Kenya</title>
+<meta name="description" content="Browse homes for sale, rentals, land and Airbnb stays in Kenya with Lisaluxhomes. All prices in Kenyan shillings.">
+<link rel="icon" href="/lisaluxhomes-icon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<link rel="stylesheet" href="/style.css"><script src="/config.js"></script></head><body>
-<div class="ann" id="ann"><span id="annt"></span><a id="anna" href="#offers"></a><button id="annx" aria-label="Close banner">×</button></div>
-<header class="top"><a class="logo" href="#home"><i class="fa-solid fa-gem" style="color:#e3bb55"></i> <span id="brand">Luxury Real Estates</span></a>
-<nav class="links"><a href="#listings">Listings</a><a href="#offers">Offers</a><a href="#categories">Categories</a><a href="#services">Services</a><a href="#about">About</a><a href="#why">Why us</a><a href="#faq">FAQ</a><a href="#contact">Contact</a><a href="/agent.html">Agent login</a></nav>
-<button id="mb" aria-label="Open menu">☰</button></header>
-<div id="ov"></div>
-<aside id="drawer"><button class="s" id="cl" style="align-self:flex-end">✕</button>
-<a href="#listings">Listings</a><a href="#offers">Offers</a><a href="#categories">Categories</a><a href="#services">Services</a><a href="#about">About</a><a href="#why">Why us</a><a href="#testimonials">Testimonials</a><a href="#faq">FAQ</a><a href="#contact">Contact</a><a href="/agent.html">Agent login</a><div class="soc"></div></aside>
+<link rel="stylesheet" href="/style.css"><script src="/config.js"></script></head><body id="home">
+<div class="bar"><div class="w"><span><i class="fa-solid fa-location-dot"></i><span id="ba"></span></span><a id="be"></a><a id="bp"></a><a class="r" href="#airbnb"><i class="fa-brands fa-airbnb"></i>Airbnb stays</a><a href="/agent.html">Login</a></div></div>
+<header class="top"><a class="logo" href="#home"><img src="/lisaluxhomes-icon.svg" alt=""><span id="brand"></span></a>
+<nav class="links" id="nav"><a href="#home">Home</a><a href="#stock">Properties</a><a href="#airbnb">Airbnb Stays</a><a href="#intro">About</a><a href="#contact">Contact</a></nav>
+<a class="btn" href="#contact">Send inquiry</a><button id="mb" aria-label="Menu" onclick="$('nav').classList.toggle('open')">&#9776;</button></header>
 
-<div class="hero" id="home"><h1 class="gt">Find the property that fits your life</h1><p id="tag"></p></div>
+<section class="hero"><div id="hs"></div><div class="hbtns"><a class="btn bnb" href="#airbnb"><i class="fa-brands fa-airbnb"></i> Available Airbnb stays</a><a class="btn" href="#stock">Browse properties</a></div></section>
 
-<div class="shop" id="listings">
-<button id="ft" class="s" onclick="$('side').classList.toggle('open')"><i class="fa-solid fa-sliders"></i> Filters</button>
-<form class="side" id="side" onsubmit="event.preventDefault();load()">
-<h3 class="gt" style="margin:0">Search properties</h3>
-<label>Keyword</label><input name="q" placeholder="e.g. garden, pool">
-<label>Location</label><input name="location" placeholder="e.g. Westlands">
-<label>Type</label><select name="type"><option value="">All types</option><option value="sale">For sale</option><option value="rent">For rent</option><option value="land">Land</option><option value="commercial">Commercial</option></select>
-<label>Price</label><div class="two"><input name="minPrice" type="number" min="0" placeholder="Min"><input name="maxPrice" type="number" min="0" placeholder="Max"></div>
-<label>Size (m²)</label><div class="two"><input name="minSize" type="number" min="0" placeholder="Min"><input name="maxSize" type="number" min="0" placeholder="Max"></div>
-<label>Bedrooms (min)</label><select name="beds"><option value="">Any</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
-<label style="display:flex;gap:8px;align-items:center;text-transform:none;letter-spacing:0;font-size:14px;color:var(--ink)"><input type="checkbox" name="offer" style="width:auto"> Offers only</label>
-<button><i class="fa-solid fa-magnifying-glass"></i> Search</button><button type="button" class="s" onclick="$('side').reset();load()">Reset</button></form>
-<div><h2>Listings</h2><p class="sub" id="count">Loading…</p><div id="grid" class="grid"></div>
-<div id="inq" class="card b" style="display:none;margin-top:24px"><form class="f" onsubmit="send(event,true)"><strong style="grid-column:1/-1">Enquire about: <span id="lt"></span></strong>
-<input name="name" placeholder="Your name" required><input name="email" type="email" placeholder="Email"><input name="phone" placeholder="Phone">
-<textarea name="message" placeholder="Message" style="grid-column:1/-1"></textarea><button>Send enquiry</button></form></div></div></div>
+<div class="w"><div class="panel"><div class="srcs">
+<button class="src on" data-s="all" onclick="setSrc('all')"><b>All properties</b><span>Sale, rent, land &amp; stays</span><i class="n"></i></button>
+<button class="src" data-s="property" onclick="setSrc('property')"><b>Buy &amp; rent</b><span>Homes, land, commercial</span><i class="n"></i></button>
+<button class="src" data-s="airbnb" onclick="setSrc('airbnb')"><b>Airbnb stays</b><span>Short stays by the night</span><i class="n"></i></button></div>
+<h2>Find your next home</h2>
+<form class="sf" id="sf" onsubmit="event.preventDefault();pg=1;render()">
+<input name="q" placeholder="Keyword e.g. garden, pool"><input name="loc" placeholder="Location e.g. Karen">
+<select name="type"><option value="">All types</option><option value="sale">For sale</option><option value="rent">For rent</option><option value="land">Land</option><option value="commercial">Commercial</option><option value="airbnb">Airbnb stays</option></select>
+<input name="min" type="number" min="0" placeholder="Min price (KSh)"><input name="max" type="number" min="0" placeholder="Max price (KSh)">
+<select name="beds"><option value="">Any bedrooms</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+<button>Search</button><button type="button" class="s" onclick="$('sf').reset();src='all';pg=1;render()">Reset conditions</button></form></div></div>
 
-<section class="alt" id="offers"><div><h2><i class="fa-solid fa-fire"></i> Special offers</h2><p class="sub">Limited-time deals on selected properties.</p><div id="ogrid" class="grid"></div></div></section>
+<section id="intro"><div class="w"><h1>Homes for sale, rent and Airbnb stays in Kenya</h1><p class="mut" style="font-size:15px;max-width:760px">Compare properties by location, type and budget. Contact Lisaluxhomes to confirm availability, arrange a viewing or book a stay. All prices are in Kenyan shillings (KSh).</p><div id="locs" class="chips"></div></div></section>
 
-<section id="categories"><h2>Browse by category</h2><p class="sub">Tap a category to filter the listings.</p><div class="grid">
-<div class="card cat" onclick="cat('sale')"><div class="ico"><i class="fa-solid fa-house"></i></div>For Sale</div><div class="card cat" onclick="cat('rent')"><div class="ico"><i class="fa-solid fa-key"></i></div>For Rent</div>
-<div class="card cat" onclick="cat('land')"><div class="ico"><i class="fa-solid fa-tree"></i></div>Land</div><div class="card cat" onclick="cat('commercial')"><div class="ico"><i class="fa-solid fa-building"></i></div>Commercial</div></div></section>
+<section id="stock" class="alt"><div class="w"><div class="hd"><h2>Property Inventory</h2><div class="tools"><a class="btn" href="#contact">Send inquiry</a>
+<button class="s" onclick="view='lg';render()">Large</button><button class="s" onclick="view='sm';render()">Compact</button><button class="s" onclick="view='list';render()">List</button>
+<select id="per" onchange="per=+this.value;pg=1;render()"><option>6</option><option>12</option><option>24</option></select></div></div>
+<p class="mut" id="count">Loading…</p><div id="grid" class="grid lg"></div><div id="pager" class="pager"></div></div></section>
 
-<section class="alt" id="services"><div><h2>Our services</h2><p class="sub">From first search to keys in hand.</p><div class="grid">
-<div class="card b"><div class="ico"><i class="fa-solid fa-house-circle-check"></i></div><h3>Buying</h3><p class="mut">Shortlisting, viewings, negotiation and title checks.</p></div>
-<div class="card b"><div class="ico"><i class="fa-solid fa-key"></i></div><h3>Renting</h3><p class="mut">Verified rentals, tenant screening and clear leases.</p></div>
-<div class="card b"><div class="ico"><i class="fa-solid fa-tags"></i></div><h3>Selling &amp; Letting</h3><p class="mut">Professional listing, marketing and valuation.</p></div>
-<div class="card b"><div class="ico"><i class="fa-solid fa-screwdriver-wrench"></i></div><h3>Property Management</h3><p class="mut">Rent collection, maintenance and reporting.</p></div>
-<div class="card b"><div class="ico"><i class="fa-solid fa-map-location-dot"></i></div><h3>Land &amp; Development</h3><p class="mut">Plot sourcing and development support.</p></div>
-<div class="card b"><div class="ico"><i class="fa-solid fa-chart-line"></i></div><h3>Valuation &amp; Advice</h3><p class="mut">Honest valuations and investment guidance.</p></div></div></div></section>
+<section id="airbnb"><div class="w"><div class="hd"><h2><i class="fa-brands fa-airbnb" style="color:#ff385c"></i> Available Airbnb stays</h2><button class="s" onclick="setSrc('airbnb');$('stock').scrollIntoView()">View all in inventory</button></div>
+<p class="mut">Book directly on Airbnb, or enquire with us. Prices are per night in KSh.</p><div id="bgrid" class="grid lg"></div></div></section>
 
-<section id="about"><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:34px"><div><h2>About us</h2><p>We are a real estate team focused on honest advice and verified listings, guiding you through every step of buying, renting or investing.</p></div>
-</div></section>
+<section id="contact" class="alt"><div class="w"><div class="card b" style="max-width:760px;margin:auto"><h2>Send an inquiry</h2>
+<form class="f" onsubmit="send(event)"><input name="name" placeholder="Full name" required><input name="email" type="email" placeholder="Email address"><input name="phone" placeholder="Phone number">
+<select name="timeline"><option>Immediately</option><option>1-3 months</option><option>Just inquiring</option></select>
+<select name="subject" id="sub"><option>Property inquiry</option><option>Airbnb booking</option><option>Selling or letting</option><option>Financing</option><option>General question</option></select>
+<textarea name="message" id="msg" placeholder="Message / requirements" style="grid-column:1/-1"></textarea><button>Send message</button></form></div></div></section>
 
-<section class="alt" id="why"><div><h2>Why us?</h2><p class="sub">The reasons clients trust us with their biggest decisions.</p>
-<div class="stats" id="stats"></div><div class="grid" id="whyg"></div></div></section>
-
-<section id="testimonials"><div><h2>What clients say</h2><p class="sub">Sample testimonials. Replace with real ones.</p><div class="grid">
-<div class="card b quote"><i class="fa-solid fa-quote-left"></i>Found our family home in two weeks. Smooth and honest.<p class="mut">— Happy buyer</p></div>
-<div class="card b quote"><i class="fa-solid fa-quote-left"></i>They manage my rentals and the income has been steady.<p class="mut">— Property owner</p></div>
-<div class="card b quote"><i class="fa-solid fa-quote-left"></i>Clear advice on land titles saved me from a bad deal.<p class="mut">— Investor</p></div></div></div></section>
-
-<section class="alt" id="faq"><div><h2>Frequently asked questions</h2><p class="sub">Quick answers to common questions. Can't find yours? <a href="#contact">Ask us</a>.</p><div class="faq" id="faqs"></div></div></section>
-
-<section style="padding-block:20px"><div class="cta"><div><h2 id="ctat"></h2><p id="ctap"></p></div><a class="btn" href="#contact" id="ctab"></a></div></section>
-
-<section id="contact"><h2>Contact us</h2><p class="sub">Tell us what you are looking for.</p>
-<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))"><div class="card b"><form class="f" onsubmit="send(event,false)">
-<input name="name" placeholder="Your name" required><input name="email" type="email" placeholder="Email"><input name="phone" placeholder="Phone">
-<textarea name="message" placeholder="How can we help?" style="grid-column:1/-1"></textarea><button>Send message</button></form></div>
-<div class="card b"><h3>Get in touch</h3><p id="cinfo"></p><h3>Follow us</h3><div class="soc"></div></div></div></section>
-
-<footer><div class="fg"><div><h4 id="fname"></h4><p id="ftag"></p><div class="soc" style="margin-top:12px"></div></div>
-<div><h4>Quick links</h4><a class="fl" href="#listings">Listings</a><a class="fl" href="#offers">Offers</a><a class="fl" href="#services">Services</a><a class="fl" href="#why">Why us</a><a class="fl" href="#faq">FAQ</a><a class="fl" href="#contact">Contact</a><a class="fl" href="/agent.html">Agent login</a></div>
-<div><h4>Contact</h4><p id="fcon"></p></div></div><div class="copy">© <span id="yr"></span> <span id="fname2"></span>. All rights reserved.</div></footer>
-<a class="wa" id="wa" href="#" target="_blank" rel="noopener" aria-label="Chat on WhatsApp" style="display:none"><i class="fa-brands fa-whatsapp"></i></a>
+<footer><div class="w fg"><div><h4 id="fn"></h4><p id="ft"></p><p><i class="fa-solid fa-envelope"></i> <a id="fe"></a><br><i class="fa-solid fa-phone"></i> <a id="fp"></a><br><i class="fa-solid fa-location-dot"></i> <span id="fa"></span></p></div>
+<div><h4>Open hours</h4><p id="fh"></p></div><div><h4>Navigation</h4><p><a href="#home">Home</a><br><a href="#stock">Properties</a><br><a href="#airbnb">Airbnb Stays</a><br><a href="#contact">Contact</a><br><a href="/agent.html">Agent login</a></p><div class="soc" id="soc"></div></div></div>
+<div class="copy">&copy; <span id="yr"></span> <span id="fn2"></span>. All rights reserved.</div></footer>
+<dialog id="dlg"><div id="dm"></div></dialog>
 
 <script>
-const CUR='$',API='/api/collections/',S=window.SITE||{};
+const API='/api/collections/',S=window.SITE||{},$=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const $=id=>document.getElementById(id),Q=s=>"'"+String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+"'",money=n=>CUR+Number(n||0).toLocaleString();
-const safe=u=>/^(#|https?:|mailto:|tel:)/.test(u||'')?u:'#';let cur=null;
-function renderWhy(){
- $('stats').innerHTML=(S.stats||[]).map(x=>`<div class="stat"><b class="gt">${esc(x.n)}</b><span>${esc(x.label)}</span></div>`).join('');
- $('whyg').innerHTML=(S.why||[]).map(w=>`<div class="card b"><div class="ico"><i class="fa-solid fa-${esc(w.icon)}"></i></div><h3>${esc(w.title)}</h3><p class="mut">${esc(w.text)}</p></div>`).join('');
- $('faqs').innerHTML=(S.faqs||[]).map((f,i)=>`<details${i===0?' open':''}><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('');}
-function init(){const n=S.name||'Luxury Real Estates';document.title=n;$('brand').textContent=n;$('fname').textContent=n;$('fname2').textContent=n;
- $('tag').textContent=S.tagline||'';$('ftag').textContent=S.tagline||'';$('yr').textContent=new Date().getFullYear();
- const b=S.banner;if(b&&b.text&&!sessionStorage.annx){$('annt').textContent=b.text;$('anna').textContent=b.linkText||'';$('anna').href=safe(b.link)}else $('ann').style.display='none';
- $('annx').onclick=()=>{sessionStorage.annx=1;$('ann').style.display='none'};
- const c=S.cta||{};$('ctat').textContent=c.title||'';$('ctap').textContent=c.text||'';$('ctab').textContent=c.button||'Contact us';
- const info=[['phone','fa-phone',S.phone,v=>'tel:'+v.replace(/\s/g,'')],['email','fa-envelope',S.email,v=>'mailto:'+v],['addr','fa-location-dot',S.address,null]].filter(x=>x[2])
-  .map(([k,i,v,h])=>`<i class="fa-solid ${i}" style="color:#e3bb55;width:20px"></i> ${h?`<a href="${esc(safe(h(v)))}" style="color:inherit;text-decoration:none">${esc(v)}</a>`:esc(v)}`).join('<br>');
- $('cinfo').innerHTML=info;$('fcon').innerHTML=info;
- const soc=(S.social||[]).filter(s=>s.url).map(s=>`<a href="${esc(safe(s.url))}" target="_blank" rel="noopener" aria-label="${esc(s.name)}" title="${esc(s.name)}"><i class="fa-brands fa-${esc(s.icon)}"></i></a>`).join('');
- document.querySelectorAll('.soc').forEach(e=>e.innerHTML=soc);
- const w=(S.social||[]).find(s=>s.icon==='whatsapp'&&s.url);if(w){$('wa').href=safe(w.url);$('wa').style.display='grid'}}
-const dr=o=>{$('drawer').classList.toggle('open',o);$('ov').classList.toggle('open',o)};
-$('mb').onclick=()=>dr(true);$('cl').onclick=()=>dr(false);$('ov').onclick=()=>dr(false);
-document.querySelectorAll('#drawer>a').forEach(a=>a.addEventListener('click',()=>dr(false)));
-async function recs(filter){const p=new URLSearchParams({perPage:'60',sort:'-featured,-created'});if(filter)p.set('filter',filter);
- const r=await fetch(API+'listings/records?'+p);if(!r.ok)throw new Error('Could not load listings');return (await r.json()).items}
-function card(l){const im=l.image?`/api/files/${l.collectionId}/${l.id}/${encodeURIComponent(l.image)}`:null,off=l.offer&&l.old_price>l.price;
- return `<div class="card">${off?`<span class="rib">${Math.round((1-l.price/l.old_price)*100)}% OFF</span>`:''}${im?`<img src="${esc(im)}" alt="${esc(l.title)}" loading="lazy">`:'<div class="ph"></div>'}<div class="b">
- <span class="tag">${esc(l.type)}</span>${l.status!=='available'?`<span class="tag">${esc(l.status)}</span>`:''}${l.featured?'<span class="tag">★ featured</span>':''}
- <h3>${esc(l.title)}</h3><div class="price">${money(l.price)}${off?`<span class="old">${money(l.old_price)}</span>`:''}</div>${l.offer&&l.offer_note?`<div class="mut"><i class="fa-solid fa-gift"></i> ${esc(l.offer_note)}</div>`:''}
- <div class="mut"><i class="fa-solid fa-location-dot"></i> ${esc(l.location)} · <i class="fa-solid fa-ruler-combined"></i> ${l.size} m²${l.bedrooms?` · <i class="fa-solid fa-bed"></i> ${l.bedrooms}`:''}${l.bathrooms?` · <i class="fa-solid fa-bath"></i> ${l.bathrooms}`:''}</div>
- <p>${esc(l.description)}</p><button data-id="${l.id}" data-t="${esc(l.title)}" onclick="pk(this.dataset.id,this.dataset.t)">Enquire</button></div></div>`}
-function filt(){const f=new FormData($('side')),c=[],g=k=>f.get(k);
- if(g('q'))c.push(`(title ~ ${Q(g('q'))} || description ~ ${Q(g('q'))} || location ~ ${Q(g('q'))})`);
- if(g('location'))c.push(`location ~ ${Q(g('location'))}`);if(g('type'))c.push(`type = ${Q(g('type'))}`);
- [['minPrice','price','>='],['maxPrice','price','<='],['minSize','size','>='],['maxSize','size','<='],['beds','bedrooms','>=']].forEach(([k,fl,op])=>{if(g(k)!==''&&isFinite(+g(k)))c.push(`${fl} ${op} ${+g(k)}`)});
- if(g('offer'))c.push('offer = true');return c.join(' && ')}
-async function load(){try{const r=await recs(filt());$('count').textContent=r.length+' propert'+(r.length===1?'y':'ies')+' found';
- $('grid').innerHTML=r.map(card).join('')||'<p>No properties match your search.</p>'}catch(e){$('count').textContent=e.message}}
-async function offers(){try{const r=await recs("offer = true && status = 'available'");$('ogrid').innerHTML=r.map(card).join('')||'<p>No offers right now. Check back soon.</p>'}catch(e){}}
-function cat(t){$('side').reset();$('side').type.value=t;load();$('listings').scrollIntoView()}
-function pk(id,t){cur=id;$('lt').textContent=t;$('inq').style.display='block';$('inq').scrollIntoView({behavior:'smooth'})}
-async function send(e,withListing){e.preventDefault();const b=Object.fromEntries(new FormData(e.target));if(withListing&&cur)b.listing=cur;
+const money=n=>'KSh '+Number(n||0).toLocaleString('en-KE'),safe=u=>/^(#|https?:|mailto:|tel:)/.test(u||'')?u:'#';
+const img=l=>l.image?`/api/files/${l.collectionId}/${l.id}/${encodeURIComponent(l.image)}`:'';
+let ALL=[],src='all',view='lg',pg=1,per=6,cur=null,hi=0,timer;
+function bookBtn(l){return l.type==='airbnb'&&l.airbnb_url?`<a class="btn bnb" href="${esc(safe(l.airbnb_url))}" target="_blank" rel="noopener">Book on Airbnb</a>`:''}
+function card(l){const im=img(l),bn=l.type==='airbnb';
+ return `<article class="card">${im?`<img src="${esc(im)}" alt="${esc(l.title)}" loading="lazy">`:'<div class="ph"></div>'}<div class="b"><div><span class="tag">${esc(l.type)}</span>${l.status!=='available'?`<span class="tag r">${esc(l.status)}</span>`:''}</div>
+ <h3>${esc(l.title)}</h3><div class="mut"><i class="fa-solid fa-location-dot"></i> ${esc(l.location)}${l.size?` · ${l.size} m²`:''}${l.bedrooms?` · ${l.bedrooms} bd`:''}${l.bathrooms?` · ${l.bathrooms} ba`:''}</div>
+ <p class="d">${esc(l.description)}</p><div class="price">${money(l.price)}${bn?'<small> / night</small>':''}</div>
+ <div class="act"><button data-i="${l.id}" onclick="det(this.dataset.i)">View details</button>${bookBtn(l)}</div></div></article>`}
+function list(){const f=new FormData($('sf')),g=k=>String(f.get(k)||'').trim().toLowerCase();
+ return ALL.filter(l=>(src==='all'||(src==='airbnb')===(l.type==='airbnb'))&&(!g('q')||[l.title,l.description,l.location].join(' ').toLowerCase().includes(g('q')))
+  &&(!g('loc')||String(l.location||'').toLowerCase().includes(g('loc')))&&(!g('type')||l.type===g('type'))&&(!g('min')||l.price>=+g('min'))&&(!g('max')||l.price<=+g('max'))&&(!g('beds')||l.bedrooms>=+g('beds')))}
+function render(){const L=list(),n=Math.max(1,Math.ceil(L.length/per));pg=Math.min(pg,n);
+ $('count').textContent=L.length+' propert'+(L.length===1?'y':'ies')+' found';$('grid').className='grid '+view;
+ $('grid').innerHTML=L.slice((pg-1)*per,pg*per).map(card).join('')||'<p>No properties match your search.</p>';
+ $('pager').innerHTML=n<2?'':Array.from({length:n},(_,i)=>`<button class="${i+1===pg?'':'s'}" onclick="pg=${i+1};render();$('stock').scrollIntoView()">${i+1}</button>`).join('');
+ document.querySelectorAll('.src').forEach(b=>b.classList.toggle('on',b.dataset.s===src))}
+function setSrc(s){src=s;pg=1;render();if(s!=='all')$('stock').scrollIntoView()}
+function hero(){const F=ALL.filter(l=>l.featured&&l.status==='available').slice(0,4);
+ $('hs').innerHTML=(F.length?F:[{}]).map((l,i)=>`<div class="hs${i?'':' on'}" style="background-image:url('${esc(l.id?img(l):'/hero1.jpg')}')"><div class="in"><span class="lab">${l.id?(l.type==='airbnb'?'Featured Airbnb Stay':'Featured Property'):'Welcome'}</span>
+ <h2>${esc(l.title||'Find a home you will love in Kenya')}</h2><p>${esc(l.id?(l.description||'').slice(0,140):S.tagline)}</p>${l.id?`<button data-i="${l.id}" onclick="det(this.dataset.i)">View details</button>`:''}</div></div>`).join('');
+ clearInterval(timer);const s=document.querySelectorAll('.hs');if(s.length>1)timer=setInterval(()=>{s[hi].classList.remove('on');hi=(hi+1)%s.length;s[hi].classList.add('on')},6000)}
+function extras(){const n=ALL.filter(l=>l.type==='airbnb');
+ $('bgrid').innerHTML=n.filter(l=>l.status==='available').map(card).join('')||'<p>Airbnb stays coming soon.</p>';
+ document.querySelectorAll('.src').forEach(b=>{const s=b.dataset.s;b.querySelector('.n').textContent=s==='all'?ALL.length:s==='airbnb'?n.length:ALL.length-n.length});
+ $('locs').innerHTML=[...new Set(ALL.map(l=>l.location).filter(Boolean))].slice(0,8).map(x=>`<button class="s" data-l="${esc(x)}" onclick="$('sf').loc.value=this.dataset.l;pg=1;render();$('stock').scrollIntoView()">${esc(x)}</button>`).join('')}
+function det(id){const l=ALL.find(x=>x.id===id);if(!l)return;cur=l;const im=img(l);
+ $('dm').innerHTML=`<button class="x" onclick="$('dlg').close()" aria-label="Close">×</button>${im?`<img src="${esc(im)}" alt="">`:''}<div class="b"><h3>${esc(l.title)}</h3><div class="price">${money(l.price)}${l.type==='airbnb'?'<small> / night</small>':''}</div>
+ <p class="mut">${esc(l.location)}${l.size?` · ${l.size} m²`:''}${l.bedrooms?` · ${l.bedrooms} bd`:''}${l.bathrooms?` · ${l.bathrooms} ba`:''}</p><p>${esc(l.description)}</p><div class="act"><button onclick="enq()">Enquire</button>${bookBtn(l)}</div></div>`;$('dlg').showModal()}
+function enq(){$('dlg').close();$('sub').value=cur.type==='airbnb'?'Airbnb booking':'Property inquiry';$('msg').value='I am interested in: '+cur.title+' ('+money(cur.price)+')';$('contact').scrollIntoView()}
+async function send(e){e.preventDefault();const f=Object.fromEntries(new FormData(e.target));
+ const b={name:f.name,email:f.email,phone:f.phone,message:'['+f.subject+' | '+f.timeline+'] '+f.message};if(cur&&String(f.message).includes('I am interested in: '+cur.title))b.listing=cur.id;
  const r=await fetch(API+'inquiries/records',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
- if(r.ok){alert('Thank you! We will be in touch.');e.target.reset();$('inq').style.display='none'}else alert('Could not send. Please add your name and an email or phone.')}
-renderWhy();init();load();offers();
+ if(r.ok){alert('Thank you! We will be in touch.');e.target.reset()}else alert('Could not send. Please add your name and an email or phone.')}
+function init(){const n=S.name||'Lisaluxhomes';document.title=n+' | Homes, Land & Airbnb Stays in Kenya';['brand','fn','fn2'].forEach(i=>$(i).textContent=n);$('ft').textContent=S.tagline||'';$('yr').textContent=new Date().getFullYear();
+ $('ba').textContent=S.address||'';$('fa').textContent=S.address||'';$('be').textContent=S.email||'';$('be').href='mailto:'+(S.email||'');$('fe').textContent=S.email||'';$('fe').href='mailto:'+(S.email||'');
+ $('bp').textContent=S.phone||'';$('bp').href='tel:'+String(S.phone||'').replace(/\s/g,'');$('fp').textContent=S.phone||'';$('fp').href=$('bp').href;$('fh').innerHTML=(S.hours||[]).map(esc).join('<br>');
+ $('soc').innerHTML=(S.social||[]).filter(s=>s.url).map(s=>`<a href="${esc(safe(s.url))}" target="_blank" rel="noopener" aria-label="${esc(s.name)}"><i class="fa-brands fa-${esc(s.icon)}"></i></a>`).join('')}
+async function load(){try{const r=await fetch(API+'listings/records?perPage=200&sort=-featured,-created');if(!r.ok)throw 0;ALL=(await r.json()).items}catch(e){$('count').textContent='Could not load listings'}hero();extras();render()}
+init();load();
 </script></body></html>
