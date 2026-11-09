@@ -8,12 +8,12 @@
 <link rel="icon" href="/lisaluxhomes-icon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<link rel="stylesheet" href="/style.css"><script src="/config.js"></script></head><body>
+<link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/theme.css"><script src="/config.js"></script></head><body>
 <div class="ann" id="ann"><span>Limited-time offers: up to 10% off selected properties</span> <a href="#offers">View offers &rarr;</a><button id="annx" aria-label="Close banner" onclick="$('ann').style.display='none'">&times;</button></div>
 <div class="bar"><div class="w"><span><i class="fa-solid fa-location-dot"></i><span id="ba"></span></span><a id="be"></a><a id="bp"></a></div></div>
 <header class="top"><a class="logo" href="#home"><img src="/lisaluxhomes-icon.svg" alt=""><span id="brand"></span></a><nav class="links" id="nav"></nav><button id="mb" aria-label="Menu" onclick="$('nav').classList.toggle('open')">&#9776;</button></header>
 
-<section class="pg" id="home"><div class="hero"><div id="hs"></div><div class="hbtns"><button onclick="$('sd').showModal()"><i class="fa-solid fa-magnifying-glass"></i> Search properties</button><a class="btn bnb" href="#airbnb"><i class="fa-brands fa-airbnb"></i> Airbnb stays</a><a class="btn ghost" href="#listings">Browse listings</a></div></div>
+<section class="pg" id="home"><div class="hero"><div id="bn" class="banner" aria-label="Listings"></div><div class="zh"><h1>Find homes, rentals &amp; Airbnb stays in Nairobi</h1><form class="zs" onsubmit="zsearch(event)"><input name="q" placeholder="Enter an estate or keyword, e.g. Kilimani, Karen, pool"><button aria-label="Search">&#128269;</button></form><div class="zt"><a href="#listings" onclick="cat('sale');return false">Buy</a><a href="#listings" onclick="cat('rent');return false">Rent</a><a href="#airbnb">Airbnb stays</a><a href="#contact">Sell</a></div></div><div id="hs" style="display:none"></div></div>
 <div class="w"><div class="intro"><h1>Find the property that fits your life</h1><p class="mut" id="tag"></p></div><div class="stats" id="stats"></div><div class="hd"><h2>Featured properties</h2><a href="#listings">View all &rarr;</a></div><div id="fgrid" class="grid"></div>
 <div class="bnbstrip"><div><h2>Airbnb stays</h2><p class="mut">Book short stays by the night in Nairobi's prime estates.</p></div><a class="btn bnb" href="#airbnb">See available stays</a></div><div id="hbgrid" style="display:none"></div></div></section>
 
@@ -73,11 +73,19 @@ function render(){const L=list(),n=Math.max(1,Math.ceil(L.length/per));pg=Math.m
  $('pager').innerHTML=n<2?'':Array.from({length:n},(_,i)=>`<button class="${i+1===pg?'':'s'}" onclick="pg=${i+1};render();scrollTo(0,0)">${i+1}</button>`).join('');$('clr').style.display=Object.values(F).some(Boolean)?'':'none'}
 function fill(){const A=ALL.filter(l=>l.type==='airbnb'&&l.status==='available'),P=ALL.filter(l=>l.type!=='airbnb'),G=(a,m)=>a.map(card).join('')||`<p>${m}</p>`;
  $('fgrid').innerHTML=G(P.filter(l=>l.featured).concat(P).filter((l,i,a)=>a.indexOf(l)===i).slice(0,3),'No properties yet.');$('hbgrid').innerHTML=G(A.slice(0,3),'Airbnb stays coming soon.');
- $('bgrid').innerHTML=G(A,'Airbnb stays coming soon.');$('ogrid').innerHTML=G(ALL.filter(l=>l.offer&&l.status==='available'),'No offers right now. Check back soon.');extras();render();hero()}
+ $('bgrid').innerHTML=G(A,'Airbnb stays coming soon.');$('ogrid').innerHTML=G(ALL.filter(l=>l.offer&&l.status==='available'),'No offers right now. Check back soon.');extras();render();hero();banner()}
 function setSrc(s){SRC=s;pg=1;render()}
 function area(a){F={...F,loc:a};SRC='all';pg=1;render()}
 function extras(){const n=ALL.filter(l=>l.type==='airbnb').length;document.querySelectorAll('.src').forEach(b=>{const s=b.dataset.s;b.querySelector('.n').textContent=s==='all'?ALL.length:s==='airbnb'?n:ALL.length-n});
  $('locs').innerHTML=(S.areas||[]).map(a=>`<button class="s" data-a="${esc(a)}" onclick="area(this.dataset.a)">${esc(a)}</button>`).join('');$('stats2').innerHTML=$('stats').innerHTML}
+function zsearch(e){e.preventDefault();F={q:String(new FormData(e.target).get('q')||'')};SRC='all';pg=1;location.hash='#listings';render()}
+function banner(){const el=$('bn');if(!el)return;let L=ALL.filter(l=>l.status!=='hidden'),row='',n=6;
+ const name={airbnb:'Airbnb stay',sale:'For sale',rent:'For rent',land:'Land',commercial:'Commercial'};
+ if(!L.length){row=['Homes for sale','Rentals','Airbnb stays','Land','Commercial','Prime Nairobi estates'].map(x=>`<div class="bi"><div class="ph"><i class="fa-solid fa-house"></i></div><div class="bt"><b>${x}</b><span>Your listings appear here</span></div></div>`).join('')}
+ else{for(let i=L.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[L[i],L[j]]=[L[j],L[i]]}
+  while(L.length<6)L=L.concat(L);n=L.length;
+  row=L.map(l=>`<div class="bi" data-i="${l.id}" onclick="det(this.dataset.i)">${img(l)?`<img src="${esc(img(l))}" alt="${esc(l.title)}" loading="lazy">`:'<div class="ph"><i class="fa-solid fa-house"></i></div>'}<span class="bb${l.type==='airbnb'?' bz':''}">${name[l.type]||esc(l.type)}</span><div class="bt"><b>${money(l.price)}${l.type==='airbnb'?' / night':''}</b><span>${esc(l.title)} &middot; ${esc(l.location)}</span></div></div>`).join('')}
+ el.innerHTML=`<div class="btrack" style="animation-duration:${Math.max(40,n*8)}s">${row}${row}</div>`}
 function doSearch(e){e.preventDefault();SRC='all';F=Object.fromEntries(new FormData(e.target));pg=1;$('sd').close();location.hash='#listings';render()}
 function clr(){F={};SRC='all';$('sf').reset();pg=1;render()}
 function cat(t){F={type:t};SRC='all';pg=1;location.hash='#listings';render()}
