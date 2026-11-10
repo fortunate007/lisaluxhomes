@@ -1,5 +1,7 @@
 // Edit these values, save, refresh.
 window.SITE = {
+  supabaseUrl: "https://nrserkpgcuezwzlpjolv.supabase.co",
+  supabaseKey: "sb_publishable_kXK-eZ_cXM3c2THekbPBUw_b8ckRkkw",
   name: "Lisaluxhomes",
   tagline: "Homes, land and Airbnb stays across Kenya's finest estates.",
   phone: "+254 722 526996",

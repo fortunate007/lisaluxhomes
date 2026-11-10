@@ -55,10 +55,10 @@
 <dialog id="dlg"><div id="dm"></div></dialog>
 
 <script>
-const API='/api/collections/',S=window.SITE||{},$=id=>document.getElementById(id);
+const SBU=(window.SITE&&window.SITE.supabaseUrl||'').replace(/\/$/,''),SBK=(window.SITE&&window.SITE.supabaseKey)||'',SBH={apikey:SBK,Authorization:'Bearer '+SBK},S=window.SITE||{},$=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=n=>'KSh '+Number(n||0).toLocaleString('en-KE'),safe=u=>/^(#|https?:|mailto:|tel:)/.test(u||'')?u:'#';
-const img=l=>l.image?`/api/files/${l.collectionId}/${l.id}/${encodeURIComponent(l.image)}`:'';
+const img=l=>l.image?SBU+'/storage/v1/object/public/listing-images/'+encodeURIComponent(l.image):'';
 const PAGES=[['home','Home'],['listings','Listings'],['airbnb','Airbnb Stays'],['offers','Offers'],['categories','Categories'],['services','Services'],['about','About'],['why','Why us'],['faq','FAQ'],['contact','Contact']];
 let ALL=[],F={},SRC='all',view='lg',pg=1,per=9,cur=null,hi=0,timer;
 function bookBtn(l){return l.type==='airbnb'&&l.airbnb_url?`<a class="btn bnb" href="${esc(safe(l.airbnb_url))}" target="_blank" rel="noopener">Book on Airbnb</a>`:''}
@@ -99,7 +99,7 @@ function det(id){const l=ALL.find(x=>x.id===id);if(!l)return;cur=l;const im=img(
 function enq(){$('dlg').close();$('sub').value=cur.type==='airbnb'?'Airbnb booking':'Property inquiry';$('msg').value='I am interested in: '+cur.title+' ('+money(cur.price)+')';location.hash='#contact'}
 async function send(e){e.preventDefault();const f=Object.fromEntries(new FormData(e.target)),b={name:f.name,email:f.email,phone:f.phone,message:'['+f.subject+' | '+f.timeline+'] '+f.message};
  if(cur&&String(f.message).includes('I am interested in: '+cur.title))b.listing=cur.id;
- const r=await fetch(API+'inquiries/records',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
+ const r=await fetch(SBU+'/rest/v1/inquiries',{method:'POST',headers:{...SBH,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(b)});
  if(r.ok){alert('Thank you! We will be in touch.');e.target.reset()}else alert('Could not send. Please add your name and an email or phone.')}
 function route(){const h=(location.hash||'#home').slice(1),id=PAGES.some(p=>p[0]===h)?h:'home';document.body.dataset.pg=id;
  document.querySelectorAll('.pg').forEach(s=>s.classList.toggle('on',s.id===id));document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.hash==='#'+id));$('nav').classList.remove('open');scrollTo(0,0)}
@@ -113,6 +113,6 @@ function init(){const n=S.name||'Lisaluxhomes';document.title=n+' | Homes for Sa
  const cd=(a,k)=>(a||[]).map(x=>`<div class="card b"><div class="ico"><i class="fa-solid fa-${esc(x.i)}"></i></div><h3>${esc(x.t)}</h3><p class="mut">${esc(x.x)}</p></div>`).join('');$('svc').innerHTML=cd(S.services);$('whyg').innerHTML=cd(S.why);
  $('faqs').innerHTML=(S.faqs||[]).map((f,i)=>`<details${i?'':' open'}><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('');
  $('soc').innerHTML=(S.social||[]).filter(s=>s.url).map(s=>`<a href="${esc(safe(s.url))}" target="_blank" rel="noopener" aria-label="${esc(s.name)}"><i class="fa-brands fa-${esc(s.icon)}"></i></a>`).join('')}
-async function load(){try{const r=await fetch(API+'listings/records?perPage=200&sort=-featured,-created');if(!r.ok)throw 0;ALL=(await r.json()).items}catch(e){$('count').textContent='Could not load listings'}fill()}
+async function load(){try{const r=await fetch(SBU+'/rest/v1/listings?select=*&order=featured.desc,created_at.desc&limit=200',{headers:SBH});if(!r.ok)throw 0;ALL=await r.json()}catch(e){$('count').textContent='Could not load listings'}fill()}
 addEventListener('hashchange',route);init();route();load();
 </script></body></html>
