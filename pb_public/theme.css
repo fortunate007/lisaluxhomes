@@ -72,3 +72,9 @@ table{box-shadow:none;border:1px solid #e1e1e5}th{background:#f5f8ff}
 footer{background:#fff;color:#5d5d65;border-top:1px solid #e1e1e5;margin-top:56px}
 footer h4{color:#2a2a33;font-size:16px}footer a{color:#006aff}.about p{color:#5d5d65}.copy{border-top:1px solid #e1e1e5;color:#767680}
 @media(max-width:700px){.hero{height:440px}.bi{flex-basis:300px}.zs input{padding:16px;font-size:16px}h2{font-size:22px}}
+
+/* clean top + short footer */
+.ann,.bar{display:none!important}
+#home .intro{display:none}
+#ft{display:none}
+.about p{max-width:420px}
