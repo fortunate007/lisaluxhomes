@@ -93,8 +93,13 @@ function hero(){const H=ALL.filter(l=>l.featured&&l.status==='available').slice(
  $('hs').innerHTML=(H.length?H:[{}]).map((l,i)=>`<div class="hs${i?'':' on'}" style="background-image:url('${esc(l.id?img(l):'/hero1.jpg')}')"><div class="in"><span class="lab">${l.id?(l.type==='airbnb'?'Featured Airbnb Stay':'Featured Property'):'Welcome'}</span><h2>${esc(l.title||'Find a home you will love in Kenya')}</h2>
  <p>${esc(l.id?(l.description||'').slice(0,140):S.tagline)}</p>${l.id?`<button data-i="${l.id}" onclick="det(this.dataset.i)">View details</button>`:''}</div></div>`).join('');
  clearInterval(timer);const s=document.querySelectorAll('.hs');if(s.length>1)timer=setInterval(()=>{s[hi].classList.remove('on');hi=(hi+1)%s.length;s[hi].classList.add('on')},6000)}
+const imgs=l=>(l.images&&l.images.length?l.images:(l.image?[l.image]:[])).map(p=>SBU+'/storage/v1/object/public/listing-images/'+encodeURIComponent(p));
+let GI=0,GA=[];
+function gset(i){GI=i;$('gm').src=GA[i];document.querySelectorAll('.gth img').forEach((t,k)=>t.classList.toggle('on',k===i))}
+function gstep(d){gset((GI+d+GA.length)%GA.length)}
+function gal(l){const a=imgs(l);GA=a;GI=0;if(!a.length)return '';return `<div class="gal"><img id="gm" src="${esc(a[0])}" alt="">${a.length>1?`<button class="gn gp" onclick="gstep(-1)" aria-label="Previous">&#8249;</button><button class="gn gx" onclick="gstep(1)" aria-label="Next">&#8250;</button><div class="gth">${a.map((u,i)=>`<img src="${esc(u)}" alt="" onclick="gset(${i})" class="${i?'':'on'}">`).join('')}</div>`:''}</div>`}
 function det(id){const l=ALL.find(x=>x.id===id);if(!l)return;cur=l;const im=img(l);
- $('dm').innerHTML=`<button class="x" onclick="$('dlg').close()" aria-label="Close">×</button>${im?`<img src="${esc(im)}" alt="">`:''}<div class="b"><h3>${esc(l.title)}</h3><div class="price">${money(l.price)}${l.type==='airbnb'?'<small> / night</small>':''}</div>
+ $('dm').innerHTML=`<button class="x" onclick="$('dlg').close()" aria-label="Close">×</button>${gal(l)}<div class="b"><h3>${esc(l.title)}</h3><div class="price">${money(l.price)}${l.type==='airbnb'?'<small> / night</small>':''}</div>
  <p class="mut">${esc(l.location)}${l.size?` · ${l.size} m²`:''}${l.bedrooms?` · ${l.bedrooms} bd`:''}${l.bathrooms?` · ${l.bathrooms} ba`:''}</p><p>${esc(l.description)}</p><div class="act"><button onclick="enq()">Enquire</button>${bookBtn(l)}</div></div>`;$('dlg').showModal()}
 function enq(){$('dlg').close();$('sub').value=cur.type==='airbnb'?'Airbnb booking':'Property inquiry';$('msg').value='I am interested in: '+cur.title+' ('+money(cur.price)+')';location.hash='#contact'}
 async function send(e){e.preventDefault();const f=Object.fromEntries(new FormData(e.target)),b={name:f.name,email:f.email,phone:f.phone,message:'['+f.subject+' | '+f.timeline+'] '+f.message};

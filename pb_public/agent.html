@@ -1,49 +1,60 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Agent Portal</title><meta name="robots" content="noindex,nofollow"><link rel="icon" href="/lisaluxhomes-icon.svg"><link rel="stylesheet" href="/style.css"><script src="/config.js"></script></head><body>
+<title>Agent Portal</title><meta name="robots" content="noindex,nofollow"><link rel="icon" href="/lisaluxhomes-icon.svg"><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/theme.css"><style>.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.pth img{width:100%;height:92px;object-fit:cover;border-radius:8px;display:block}.pth div{display:flex;gap:4px;margin-top:4px}.pth button{padding:4px 8px;font-size:11px}</style><script src="/config.js"></script></head><body>
 <header class="top"><strong class="logo">&#9670; Agent Portal</strong><span id="who" class="mut"></span><span><a href="/">View site</a> &middot; <a href="#" onclick="out();return false">Logout</a></span></header>
 <main id="app"></main>
 <script>
 const C=window.SITE||{},U=(C.supabaseUrl||'').replace(/\/$/,''),K=C.supabaseKey||'',S=sessionStorage,app=document.getElementById('app');
-let tok=S.tok||'',me=JSON.parse(S.me||'null'),tab='listings',edit=null,L=[];
+let tok=S.tok||'',me=JSON.parse(S.me||'null'),tab='listings',edit=null,L=[],PICS=[],GONE=[];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const mgr=()=>me&&me.app_metadata&&me.app_metadata.role==='manager',$w=t=>document.getElementById('who').textContent=t;
 const hdr=()=>({apikey:K,Authorization:'Bearer '+(tok||K)});
 async function api(p,o={}){o.headers={...hdr(),...(o.headers||{})};const r=await fetch(U+p,o),t=await r.text();let j=null;try{j=t?JSON.parse(t):null}catch(e){}
  if(r.status===401){out();throw 0}if(!r.ok){alert((j&&(j.message||j.msg||j.error))||'Not allowed');throw 0}return j}
+const pic=p=>U+'/storage/v1/object/public/listing-images/'+encodeURIComponent(p);
+function drawPics(){const d=document.getElementById('pics');if(!d)return;d.innerHTML=PICS.length?`<div class="mut" style="margin-bottom:6px">Photos (${PICS.length}). The first one is the cover.</div><div class="pgrid">${PICS.map((p,i)=>`<div class="pth"><img src="${esc(pic(p))}" alt=""><div><button type="button" class="s" data-i="${i}" onclick="coverPic(+this.dataset.i)">${i?'Make cover':'Cover'}</button><button type="button" class="d" data-i="${i}" onclick="rmPic(+this.dataset.i)">Remove</button></div></div>`).join('')}</div>`:''}
+function coverPic(i){PICS.unshift(PICS.splice(i,1)[0]);drawPics()}
+function rmPic(i){GONE.push(PICS.splice(i,1)[0]);drawPics()}
+async function shrink(f){try{if(f.size<400000||!/^image\/(jpeg|png|webp)$/.test(f.type))return f;const bm=await createImageBitmap(f),k=Math.min(1,1600/Math.max(bm.width,bm.height)),c=document.createElement('canvas');c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);c.getContext('2d').drawImage(bm,0,0,c.width,c.height);
+ const b=await new Promise(r=>c.toBlob(r,'image/jpeg',.82));return b&&b.size<f.size?new File([b],f.name.replace(/\.\w+$/,'')+'.jpg',{type:'image/jpeg'}):f}catch(e){return f}}
 function login(){$w('');app.innerHTML=`<div class="card b" style="max-width:340px;margin:60px auto"><h3>Agent login</h3><input id="em" placeholder="Email" style="margin-bottom:8px"><input id="pw" type="password" placeholder="Password" style="margin-bottom:10px" onkeydown="event.key==='Enter'&&go()"><button onclick="go()">Enter</button></div>`}
 async function go(){const r=await fetch(U+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:K,'Content-Type':'application/json'},body:JSON.stringify({email:em.value,password:pw.value})});
  if(!r.ok)return alert('Wrong email or password');const d=await r.json();tok=d.access_token;me=d.user;S.tok=tok;S.me=JSON.stringify(me);render()}
 function out(){S.clear();tok='';me=null;login()}
 async function render(){if(!me||!tok)return login();$w((me.email||'')+' - '+(mgr()?'manager':'agent'));
  let h=`<div class="tabs">${['listings','inquiries'].map(t=>`<button class="${t===tab?'on':''}" onclick="tab='${t}';edit=null;render()">${t}</button>`).join('')}</div>`;
- if(tab==='listings'){L=await api('/rest/v1/listings?select=*&order=created_at.desc&limit=200'+(mgr()?'':'&owner=eq.'+me.id));const e=edit?L.find(x=>x.id===edit)||{}:{};
+ if(tab==='listings'){L=await api('/rest/v1/listings?select=*&order=created_at.desc&limit=200'+(mgr()?'':'&owner=eq.'+me.id));const e=edit?L.find(x=>x.id===edit)||{}:{};PICS=edit?(e.images&&e.images.length?[...e.images]:(e.image?[e.image]:[])):[];GONE=[];
   const o=(v,a)=>a.map(x=>`<option ${x===v?'selected':''}>${x}</option>`).join('');
   h+=`<form class="card f" id="lf" onsubmit="save(event)"><strong style="grid-column:1/-1">${edit?'Edit':'Add'} listing</strong>
   <input name="title" placeholder="Title" value="${esc(e.title)}" required><input name="price" type="number" placeholder="Price in KSh (nightly rate for Airbnb)" value="${e.price??''}">
   <select name="type">${o(e.type,['sale','rent','land','commercial','airbnb'])}</select><select name="status">${o(e.status||'available',['available','sold','rented','hidden'])}</select>
   <input name="location" placeholder="Location e.g. Karen, Nairobi" value="${esc(e.location)}"><input name="size" type="number" placeholder="Size (m2)" value="${e.size??''}">
   <input name="bedrooms" type="number" placeholder="Beds" value="${e.bedrooms??''}"><input name="bathrooms" type="number" placeholder="Baths" value="${e.bathrooms??''}">
-  <input name="photo" type="file" accept="image/jpeg,image/png,image/webp"><label><input type="checkbox" name="featured" style="width:auto" ${e.featured?'checked':''}> Featured</label>
+  <input name="photo" type="file" multiple accept="image/jpeg,image/png,image/webp" title="Choose one or many photos"><div id="pics" style="grid-column:1/-1"></div><label><input type="checkbox" name="featured" style="width:auto" ${e.featured?'checked':''}> Featured</label>
   <label><input type="checkbox" name="offer" style="width:auto" ${e.offer?'checked':''}> On offer</label><input name="old_price" type="number" placeholder="Old price (for offers)" value="${e.old_price||''}">
   <input name="airbnb_url" placeholder="Airbnb link (Airbnb stays only)" value="${esc(e.airbnb_url)}"><input name="offer_note" placeholder="Offer note e.g. 10% off" value="${esc(e.offer_note)}">
   <textarea name="description" placeholder="Description" style="grid-column:1/-1">${esc(e.description)}</textarea>
   <button>${edit?'Update':'Create'}</button>${edit?'<button type="button" class="s" onclick="edit=null;render()">Cancel</button>':''}</form>
-  <div class="wrap"><table><tr><th>Title</th><th>Type</th><th>Status</th><th>Location</th><th>Price (KSh)</th><th></th></tr>${L.map(l=>`<tr><td>${esc(l.title)}${l.offer?' &#128293;':''}</td><td>${esc(l.type)}</td><td>${esc(l.status)}</td><td>${esc(l.location)}</td><td>${Number(l.price).toLocaleString()}</td>
-  <td><button class="s" data-i="${l.id}" onclick="edit=this.dataset.i;render();scrollTo(0,0)">Edit</button> <button class="d" data-i="${l.id}" onclick="del(this.dataset.i)">Delete</button></td></tr>`).join('')||'<tr><td colspan=6>No listings yet.</td></tr>'}</table></div>`}
+  <div class="wrap"><table><tr><th>Title</th><th>Type</th><th>Status</th><th>Location</th><th>Price (KSh)</th><th>Photos</th><th></th></tr>${L.map(l=>`<tr><td>${esc(l.title)}${l.offer?' &#128293;':''}</td><td>${esc(l.type)}</td><td>${esc(l.status)}</td><td>${esc(l.location)}</td><td>${Number(l.price).toLocaleString()}</td><td>${(l.images&&l.images.length)||(l.image?1:0)}</td>
+  <td><button class="s" data-i="${l.id}" onclick="edit=this.dataset.i;render();scrollTo(0,0)">Edit</button> <button class="d" data-i="${l.id}" onclick="del(this.dataset.i)">Delete</button></td></tr>`).join('')||'<tr><td colspan=7>No listings yet.</td></tr>'}</table></div>`}
  if(tab==='inquiries'){const I=await api('/rest/v1/inquiries?select=*,listings(title)&order=handled.asc,created_at.desc&limit=200');
   h+=`<div class="wrap"><table><tr><th>From</th><th>Contact</th><th>Property</th><th>Message</th><th></th></tr>${I.map(i=>`<tr style="opacity:${i.handled?.5:1}"><td>${esc(i.name)}<div class="mut">${esc((i.created_at||'').slice(0,16))}</div></td><td>${esc(i.email)}<br>${esc(i.phone)}</td>
   <td>${esc(i.listings?i.listings.title:'-')}</td><td>${esc(i.message)}</td><td><button class="s" data-i="${i.id}" data-h="${!i.handled}" onclick="mark(this.dataset.i,this.dataset.h==='true')">${i.handled?'Reopen':'Done'}</button></td></tr>`).join('')||'<tr><td colspan=5>No enquiries yet.</td></tr>'}</table></div>
   <p class="mut">You see enquiries on your own listings${mgr()?' (managers see all, including general contact messages)':''}.</p>`}
- app.innerHTML=h}
-async function save(ev){ev.preventDefault();const fm=ev.target,d=new FormData(fm),v=k=>String(d.get(k)||'').trim(),n=k=>v(k)===''?null:+v(k);
+ app.innerHTML=h;drawPics()}
+async function save(ev){ev.preventDefault();const fm=ev.target,d=new FormData(fm),v=k=>String(d.get(k)||'').trim(),n=k=>v(k)===''?null:+v(k),btn=fm.querySelector('button:not([type])');
  const b={title:v('title'),price:n('price')||0,type:v('type'),status:v('status'),location:v('location'),size:n('size'),bedrooms:n('bedrooms'),bathrooms:n('bathrooms'),description:v('description'),featured:fm.featured.checked,offer:fm.offer.checked,old_price:n('old_price'),offer_note:v('offer_note'),airbnb_url:v('airbnb_url')};
- const f=fm.photo.files[0];if(f){if(f.size>5242880)return alert('Photo is over 5 MB. Please choose a smaller one.');
-  const path=(crypto.randomUUID?crypto.randomUUID():Date.now())+'.'+((f.name.split('.').pop()||'jpg').toLowerCase());
-  await api('/storage/v1/object/listing-images/'+path,{method:'POST',headers:{'x-upsert':'true'},body:f});b.image=path}
- const J={'Content-Type':'application/json',Prefer:'return=minimal'};
- if(edit)await api('/rest/v1/listings?id=eq.'+edit,{method:'PATCH',headers:J,body:JSON.stringify(b)});else await api('/rest/v1/listings',{method:'POST',headers:J,body:JSON.stringify(b)});
- edit=null;render()}
-async function del(id){if(confirm('Delete this listing?')){await api('/rest/v1/listings?id=eq.'+id,{method:'DELETE'});render()}}
+ const files=[...fm.photo.files];if(PICS.length+files.length>40)return alert('Maximum 40 photos per listing.');
+ btn.disabled=true;
+ try{let k=0;for(const f0 of files){k++;btn.textContent='Uploading '+k+'/'+files.length+'...';const f=await shrink(f0);
+   if(f.size>5242880){alert(f0.name+' is over 5 MB even after shrinking, so it was skipped.');continue}
+   const path=(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+k)+'.'+((f.name.split('.').pop()||'jpg').toLowerCase());
+   await api('/storage/v1/object/listing-images/'+path,{method:'POST',headers:{'x-upsert':'true'},body:f});PICS.push(path)}
+  b.images=PICS;b.image=PICS[0]||null;const J={'Content-Type':'application/json',Prefer:'return=minimal'};
+  if(edit)await api('/rest/v1/listings?id=eq.'+edit,{method:'PATCH',headers:J,body:JSON.stringify(b)});else await api('/rest/v1/listings',{method:'POST',headers:J,body:JSON.stringify(b)});
+  for(const p of GONE)fetch(U+'/storage/v1/object/listing-images/'+encodeURIComponent(p),{method:'DELETE',headers:hdr()}).catch(()=>{});
+  GONE=[];edit=null;render()}catch(e){btn.disabled=false;btn.textContent=edit?'Update':'Create'}}
+async function del(id){if(!confirm('Delete this listing and its photos?'))return;const l=L.find(x=>x.id===id)||{},ps=l.images&&l.images.length?l.images:(l.image?[l.image]:[]);
+ await api('/rest/v1/listings?id=eq.'+id,{method:'DELETE'});for(const p of ps)fetch(U+'/storage/v1/object/listing-images/'+encodeURIComponent(p),{method:'DELETE',headers:hdr()}).catch(()=>{});render()}
 async function mark(id,h){await api('/rest/v1/inquiries?id=eq.'+id,{method:'PATCH',headers:{'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({handled:h})});render()}
 render().catch(()=>{});
 </script></body></html>
